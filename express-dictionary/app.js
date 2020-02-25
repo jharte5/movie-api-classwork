@@ -6,12 +6,26 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 // allows us to see what http method was used, status, and path
 const logger = require('morgan');
+const mongoose = require('mongoose');
+require('dotenv').config()
 
 // allows us to use routes
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 // starts express by calling the function 
 const app = express();
+
+
+// connect my db
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+  })
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log(`MongoDB Error: ${err}`));
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,7 +39,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // connects static assets to express
 app.use(express.static(path.join(__dirname, 'public')));
-// define out parent route and note which folder to use
+// define our parent route and note which folder to use
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
